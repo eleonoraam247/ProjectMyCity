@@ -1,6 +1,5 @@
 package com.example.elyascity
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,7 +30,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,14 +40,15 @@ import com.example.elyascity.ui.theme.*
 
 // --- Data Models ---
 data class CityCategory(val title: String, val icon: ImageVector)
-data class Place(val name: String, val category: String, val imageRes: Int)
+data class Place(val name: String, val category: String, val imageRes: Int, val description: String)
 
 val categories = listOf(
     CityCategory("Restaurants", Icons.Default.Restaurant),
     CityCategory("Parks", Icons.Default.Park),
     CityCategory("Museums", Icons.Default.Museum),
     CityCategory("Shopping", Icons.Default.ShoppingBag),
-    CityCategory("Cafes", Icons.Default.LocalCafe)
+    CityCategory("Cafes", Icons.Default.LocalCafe),
+    CityCategory("Bars", Icons.Default.Nightlife)
 )
 
 class MainActivity : ComponentActivity() {
@@ -86,6 +85,7 @@ fun MyCityApp(
         if (isTablet) {
             CityNavigationRail(
                 navController = navController,
+                selectedCategory = uiState.selectedCategory,
                 onCategoryClick = { 
                     viewModel.selectCategory(it)
                     navController.navigate("places") {
@@ -130,7 +130,11 @@ fun MyCityApp(
 }
 
 @Composable
-fun CityNavigationRail(navController: NavHostController, onCategoryClick: (String) -> Unit) {
+fun CityNavigationRail(
+    navController: NavHostController,
+    selectedCategory: String,
+    onCategoryClick: (String) -> Unit
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -140,15 +144,27 @@ fun CityNavigationRail(navController: NavHostController, onCategoryClick: (Strin
             onClick = { navController.navigate("home") { popUpTo("home") { inclusive = true } } },
             icon = { Icon(Icons.Default.Home, null) },
             label = { Text("Home") },
-            colors = NavigationRailItemDefaults.colors(selectedIconColor = BluePrimary, indicatorColor = Color.White, unselectedIconColor = Color.White.copy(0.7f), selectedTextColor = Color.White, unselectedTextColor = Color.White.copy(0.7f))
+            colors = NavigationRailItemDefaults.colors(
+                selectedIconColor = BluePrimary,
+                indicatorColor = Color.White,
+                unselectedIconColor = Color.White.copy(0.7f),
+                selectedTextColor = Color.White,
+                unselectedTextColor = Color.White.copy(0.7f)
+            )
         )
         categories.forEach { category ->
             NavigationRailItem(
-                selected = false, // Simplified for this implementation
+                selected = currentRoute == "places" && selectedCategory == category.title,
                 onClick = { onCategoryClick(category.title) },
                 icon = { Icon(category.icon, null) },
                 label = { Text(category.title) },
-                colors = NavigationRailItemDefaults.colors(selectedIconColor = BluePrimary, indicatorColor = Color.White, unselectedIconColor = Color.White.copy(0.7f), selectedTextColor = Color.White, unselectedTextColor = Color.White.copy(0.7f))
+                colors = NavigationRailItemDefaults.colors(
+                    selectedIconColor = BluePrimary,
+                    indicatorColor = Color.White,
+                    unselectedIconColor = Color.White.copy(0.7f),
+                    selectedTextColor = Color.White,
+                    unselectedTextColor = Color.White.copy(0.7f)
+                )
             )
         }
     }
@@ -162,13 +178,19 @@ fun HomeScreen(isTablet: Boolean, onCategoryClick: (String) -> Unit) {
             if (!isTablet) {
                 TopAppBar(
                     title = { Text("My City", fontWeight = FontWeight.Bold) },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = BluePrimary, titleContentColor = Color.White)
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = BluePrimary,
+                        titleContentColor = Color.White
+                    )
                 )
             }
         }
     ) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).background(BlueBackground)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(BlueBackground)
                 .then(if (isTablet) Modifier.padding(32.dp) else Modifier.padding(16.dp))
         ) {
             Text(
@@ -190,7 +212,12 @@ fun HomeScreen(isTablet: Boolean, onCategoryClick: (String) -> Unit) {
                     }
                 }
             } else {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
                     categories.forEach { category ->
                         CategoryButton(category, onCategoryClick)
                     }
@@ -208,7 +235,12 @@ fun CategoryCard(category: CityCategory, onClick: (String) -> Unit) {
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(BluePrimary, BlueSoft))), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Brush.verticalGradient(listOf(BluePrimary, BlueSoft))),
+            contentAlignment = Alignment.Center
+        ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(category.icon, null, modifier = Modifier.size(40.dp), tint = Color.White)
                 Spacer(Modifier.height(12.dp))
@@ -222,15 +254,24 @@ fun CategoryCard(category: CityCategory, onClick: (String) -> Unit) {
 fun CategoryButton(category: CityCategory, onClick: (String) -> Unit) {
     Card(
         onClick = { onClick(category.title) },
-        modifier = Modifier.width(300.dp).padding(vertical = 8.dp),
+        modifier = Modifier
+            .width(300.dp)
+            .padding(vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Row(modifier = Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Icon(category.icon, null, tint = BluePrimary, modifier = Modifier.size(28.dp))
             Spacer(Modifier.width(16.dp))
-            Text(category.title, style = MaterialTheme.typography.titleMedium, color = BlueAccent)
+            Text(
+                category.title,
+                style = MaterialTheme.typography.titleMedium,
+                color = BlueAccent
+            )
         }
     }
 }
@@ -249,25 +290,54 @@ fun PlacesScreen(
                 TopAppBar(
                     title = { Text(uiState.selectedCategory) },
                     navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = BluePrimary, titleContentColor = Color.White, navigationIconContentColor = Color.White)
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = BluePrimary,
+                        titleContentColor = Color.White,
+                        navigationIconContentColor = Color.White
+                    )
                 )
             }
         }
     ) { padding ->
         if (isTablet) {
-            Row(modifier = Modifier.fillMaxSize().padding(padding).padding(24.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(24.dp)
+            ) {
                 LazyColumn(modifier = Modifier.weight(1f).padding(end = 24.dp)) {
-                    item { Text(uiState.selectedCategory, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold, color = BluePrimary); Spacer(Modifier.height(24.dp)) }
+                    item {
+                        Text(
+                            uiState.selectedCategory,
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = BluePrimary
+                        )
+                        Spacer(Modifier.height(24.dp))
+                    }
                     items(uiState.places) { place ->
                         PlaceItem(place, isSelected = uiState.selectedPlace == place, onClick = onPlaceClick)
                     }
                 }
-                Card(modifier = Modifier.weight(1.5f).fillMaxHeight(), shape = RoundedCornerShape(32.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                Card(
+                    modifier = Modifier
+                        .weight(1.5f)
+                        .fillMaxHeight(),
+                    shape = RoundedCornerShape(32.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
                     uiState.selectedPlace?.let { PlaceDetailContent(it) }
                 }
             }
         } else {
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 items(uiState.places) { place ->
                     PlaceItem(place, isSelected = false, onClick = onPlaceClick, modifier = Modifier.width(320.dp))
                 }
@@ -280,14 +350,28 @@ fun PlacesScreen(
 fun PlaceItem(place: Place, isSelected: Boolean, onClick: (Place) -> Unit, modifier: Modifier = Modifier) {
     Card(
         onClick = { onClick(place) },
-        modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = if (isSelected) BlueSoft else Color.White),
         elevation = CardDefaults.cardElevation(if (isSelected) 4.dp else 1.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(12.dp)) {
-            Image(painter = painterResource(place.imageRes), null, modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)), contentScale = ContentScale.Crop)
-            Text(place.name, modifier = Modifier.padding(start = 16.dp), style = MaterialTheme.typography.titleMedium, color = if (isSelected) BluePrimary else BlueAccent)
+            Image(
+                painter = painterResource(place.imageRes),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+            Text(
+                place.name,
+                modifier = Modifier.padding(start = 16.dp),
+                style = MaterialTheme.typography.titleMedium,
+                color = if (isSelected) BluePrimary else BlueAccent
+            )
         }
     }
 }
@@ -300,7 +384,11 @@ fun DetailsScreen(place: Place?, onBack: () -> Unit) {
             TopAppBar(
                 title = { Text("Details") },
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = BluePrimary, titleContentColor = Color.White, navigationIconContentColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = BluePrimary,
+                    titleContentColor = Color.White,
+                    navigationIconContentColor = Color.White
+                )
             )
         }
     ) { padding ->
@@ -311,11 +399,26 @@ fun DetailsScreen(place: Place?, onBack: () -> Unit) {
 @Composable
 fun PlaceDetailContent(place: Place, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        Image(painter = painterResource(place.imageRes), null, modifier = Modifier.fillMaxWidth().height(350.dp), contentScale = ContentScale.Crop)
+        Image(
+            painter = painterResource(place.imageRes),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(350.dp),
+            contentScale = ContentScale.Crop
+        )
         Column(Modifier.padding(32.dp)) {
-            Text(place.name, style = MaterialTheme.typography.displayMedium, color = BlueAccent, fontWeight = FontWeight.Bold)
+            Text(
+                place.name,
+                style = MaterialTheme.typography.displayMedium,
+                color = BlueAccent,
+                fontWeight = FontWeight.Bold
+            )
             Spacer(Modifier.height(16.dp))
-            Text("Discover the beauty of ${place.name} in Elyas City. This place offers a unique experience for all visitors with its historical and cultural significance.", style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = place.description,
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }

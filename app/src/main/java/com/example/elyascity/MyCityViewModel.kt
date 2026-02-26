@@ -37,27 +37,122 @@ data class MyCityUiState(
 
 val placesData = listOf(
     // Cafes
-    Place("Central Cafe", "Cafes", R.drawable.cafe),
-    Place("Coffee Time", "Cafes", R.drawable.cafe),
-    Place("Morning Brew", "Cafes", R.drawable.cafe),
+    Place(
+        "Kulikov", 
+        "Cafes", 
+        R.drawable.kulikov,
+        "A famous pastry shop known for its delicious cakes and cozy atmosphere."
+    ),
+    Place(
+        "Makaronnaya", 
+        "Cafes", 
+        R.drawable.cats,
+        "The best place for pasta lovers with a wide variety of authentic Italian recipes."
+    ),
+    Place(
+        "Utrechkovv and cats", 
+        "Cafes", 
+        R.drawable.makaron,
+        "A unique cat cafe where you can enjoy your coffee in the company of friendly cats."
+    ),
     
     // Parks
-    Place("Green Park", "Parks", R.drawable.cafe),
-    Place("National Park", "Parks", R.drawable.cafe),
-    Place("Sunset Garden", "Parks", R.drawable.cafe),
-    
+    Place(
+        "Yntymak Park", 
+        "Parks", 
+        R.drawable.yntymak,
+        "A modern park with great walking paths, playgrounds, and a beautiful fountain."
+    ),
+    Place(
+        "Panfilova Park", 
+        "Parks", 
+        R.drawable.panfilov,
+        "The oldest park in the city, famous for its amusement rides and historical monuments."
+    ),
+    Place(
+        "Evrazia", 
+        "Parks", 
+        R.drawable.evrazia,
+        "A quiet green area perfect for family picnics and evening walks."
+    ),
+
     // Museums
-    Place("History Museum", "Museums", R.drawable.cafe),
-    Place("Art Gallery", "Museums", R.drawable.cafe),
-    Place("Science Center", "Museums", R.drawable.cafe),
+    Place(
+        "Museum named by Aitiev Gaparov", 
+        "Museums", 
+        R.drawable.agmuseum,
+        "The National Museum of Fine Arts, featuring a rich collection of Kyrgyz national art."
+    ),
+    Place(
+        "National Kyrgyzstan Museum", 
+        "Museums", 
+        R.drawable.krmuseum,
+        "Explore the history of Kyrgyzstan from ancient times to the present day."
+    ),
+    Place(
+        "Museum named by Suimonkulov Chokmorova", 
+        "Museums", 
+        R.drawable.schmuseum,
+        "Dedicated to the life and work of the famous Kyrgyz actor and artist Suimonkul Chokmorov."
+    ),
     
     // Shopping
-    Place("City Mall", "Shopping", R.drawable.cafe),
-    Place("Old Market", "Shopping", R.drawable.cafe),
-    Place("Fashion Street", "Shopping", R.drawable.cafe),
+    Place(
+        "Asia Mall", 
+        "Shopping", 
+        R.drawable.asiamall,
+        "A large shopping center with many international brands, a cinema, and a food court."
+    ),
+    Place(
+        "Bishkek Park", 
+        "Shopping", 
+        R.drawable.biskpark,
+        "A trendy shopping mall in the city center with a rooftop terrace and ice rink."
+    ),
+    Place(
+        "TSUM", 
+        "Shopping", 
+        R.drawable.tsum,
+        "The central department store, a great place to buy souvenirs and electronics."
+    ),
     
     // Restaurants
-    Place("Italian Restaurant", "Restaurants", R.drawable.cafe),
-    Place("Burger House", "Restaurants", R.drawable.cafe),
-    Place("Sushi Bar", "Restaurants", R.drawable.cafe)
+    Place(
+        "Embassy", 
+        "Restaurants", 
+        R.drawable.embassy,
+        "An upscale restaurant offering a fine dining experience with international cuisine."
+    ),
+    Place(
+        "Gangnam", 
+        "Restaurants", 
+        R.drawable.gangnam,
+        "Authentic Korean BBQ restaurant with a lively atmosphere and great service."
+    ),
+    Place(
+        "Taller Gastrobisto", 
+        "Restaurants", 
+        R.drawable.tallergastrobisto,
+        "A modern bistro focusing on local ingredients and creative culinary techniques."
+    ),
+
+    // Bars
+    Place(
+        "No Name Bar", 
+        "Bars", 
+        R.drawable.cafe,
+        "A hidden gem with great cocktails and an underground vibe."
+    ),
+    Place(
+        "Abstract", 
+        "Bars", 
+        R.drawable.cafe,
+        "A stylish bar with modern art on the walls and a wide selection of drinks."
+    ),
+    Place(
+        "Kevins", 
+        "Bars", 
+        R.drawable.cafe,
+        "A popular sports bar where you can watch matches and enjoy cold beer."
+    )
 )
